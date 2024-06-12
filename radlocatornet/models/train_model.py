@@ -21,7 +21,7 @@ def test_function(a: int, b: int) -> float:
     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec
 
     Args:
-        a (int): First number.
+        a (int): First number. Cool
         b (int): Second number.
 
     Returns:
