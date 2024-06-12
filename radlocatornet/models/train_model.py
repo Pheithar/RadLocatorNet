@@ -16,9 +16,20 @@ def my_app(cfg: DictConfig) -> None:
     print(OmegaConf.to_yaml(cfg))
 
 
-def test_function():
-    """Test function."""
+def test_function(a: int, b: int) -> float:
+    """Test function.
+    Args:
+    ----
+    a (int): First number.
+    b (int): Second number.
+
+    Returns:
+    --------
+    float: Multiplication of the two numbers.
+
+    """
     print("Test function")
+    return a * b
 
 
 if __name__ == "__main__":
