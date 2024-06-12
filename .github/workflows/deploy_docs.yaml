@@ -2,9 +2,9 @@ name: Build-sphinx-docs
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
   workflow_dispatch:
 
@@ -23,7 +23,7 @@ jobs:
       - name: Install dependencies
         run: | 
           python -m pip install --upgrade pip
-          make install
+          make install_dev
       - name: Build HTML
         run: | 
           make documentation
