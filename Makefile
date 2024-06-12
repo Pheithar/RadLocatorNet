@@ -9,6 +9,7 @@ updaterequirements: install_dev
 install: install_dev
 	@echo "Installing requirements..."
 	@pip install -r requirements.txt
+	@pip install -e .
 
 install_dev:
 	@echo "Installing development requirements..."
