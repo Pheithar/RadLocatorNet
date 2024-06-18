@@ -15,3 +15,8 @@ install_dev:
 	@echo "Installing development requirements..."
 	@pip install -r requirements_dev.txt
 	
+format:
+	@echo "Formatting code..."
+	@isort radlocatornet
+	@black radlocatornet
+	

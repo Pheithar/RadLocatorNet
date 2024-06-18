@@ -21,6 +21,13 @@ release = "0.0.1"
 
 extensions = ["sphinx.ext.autodoc", "sphinx.ext.napoleon", "sphinx.ext.viewcode"]
 
+autodoc_default_options = {
+    "member-order": "bysource",
+    "special-members": "__init__, __getitem__, __len__, __repr__",
+    "undoc-members": True,
+    "exclude-members": "__weakref__",
+}
+
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 

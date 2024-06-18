@@ -7,7 +7,9 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   radlocatornet.datasets
    radlocatornet.models
+   radlocatornet.scripts
 
 Module contents
 ---------------
