@@ -9,6 +9,7 @@ build:
       - pip install -r requirements_dev.txt
       - make documentation
 
+python:
   install:
     - requirements: requirements.txt
     - path: .
