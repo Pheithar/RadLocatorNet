@@ -4,7 +4,7 @@ documentation:
 
 updaterequirements: install_dev
 	@echo "Updating requirements..."
-	@pipreqs --force .
+	@pipreqs --print .
 
 install: install_dev
 	@echo "Installing requirements..."

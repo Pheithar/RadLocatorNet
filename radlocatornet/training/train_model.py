@@ -1,10 +1,10 @@
 """File to kick off the training of a model from a single place"""
 
 from typing import Any
-import lightning as pl
+import lightning as L
 from lightning.pytorch.loggers import WandbLogger, TensorBoardLogger, CSVLogger
 from radlocatornet.models import FullyConnectedNetwork, Conv1DNetwork
-from radlocatornet.datasets import FlatDataset, ConvDataset
+from radlocatornet.datasets import RadLocatorDataModule
 from torch import nn
 
 
@@ -28,7 +28,7 @@ def train_model(
         nn.Module: The trained model
 
     Raises:
-        NotImplementedError: Raised if the model, logger, or any other part of the training is not implemented yet. This is to ensure that the user knows that the training is not yet available.
+        NotImplementedError: If the model type is not implemented. This is to ensure that the user knows that the training is not yet available.
     """
     print("Training the model")
     print(f"Model config: {model_cfg}")
@@ -50,7 +50,7 @@ def train_model(
         else:
             raise NotImplementedError(f"Logger type '{logger_type}' not implemented")
 
-    trainer = pl.Trainer(
+    trainer = L.Trainer(
         **training_cfg,
         logger=logger,
     )
@@ -66,18 +66,8 @@ def train_model(
     else:
         raise NotImplementedError(f"Model type '{model_type}' not implemented")
 
-    dataset = None
-    # TODO: Move to utils
-    dataset_type = data_cfg.pop("type")
-    if dataset_type == "flat":
-        dataset = FlatDataset(**data_cfg)
-    elif dataset_type == "conv":
-        dataset = ConvDataset(**data_cfg)
-    else:
-        raise NotImplementedError(f"Dataset type '{dataset_type}' not implemented")
+    datamodule = RadLocatorDataModule(**data_cfg)
 
-    print(trainer)
-    print(model)
-    print(dataset)
-
-    return model
+    trainer.fit(model, datamodule)
+    trainer.validate(model, datamodule=datamodule)
+    trainer.test(model, datamodule=datamodule)

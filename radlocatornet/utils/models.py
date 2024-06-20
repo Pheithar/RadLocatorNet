@@ -7,10 +7,10 @@ def get_activation_function(name: str) -> nn.Module:
     """Get the activation function from the name
 
     Allowed activation functions:
-    - relu -> nn.ReLU
-    - tanh -> nn.Tanh
-    - sigmoid -> nn.Sigmoid
-    - identity -> nn.Identity
+        - relu -> nn.ReLU
+        - tanh -> nn.Tanh
+        - sigmoid -> nn.Sigmoid
+        - identity -> nn.Identity
 
 
     Args:
@@ -36,6 +36,10 @@ def get_activation_function(name: str) -> nn.Module:
 
 def get_loss_function(name: str) -> nn.Module:
     """Get the loss function from the name
+
+    Allowed loss functions:
+        - mse -> nn.MSELoss
+        - l1 -> nn.L1Loss
 
     Args:
         name (str): The name of the loss function
