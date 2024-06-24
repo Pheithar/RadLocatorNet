@@ -64,6 +64,12 @@ class FlatDataset(Dataset):
         """
         label = self.data[idx, :3].astype(self.dtype)
         signal = self.data[idx, 3:].astype(self.dtype)
+
+        print(f"Signal: {signal.shape}, Label: {label.shape}")
+
+        print(f"Signal: {signal.min()}, {signal.max()}")
+
+        assert False
         return signal, label
 
     def __repr__(self) -> str:
