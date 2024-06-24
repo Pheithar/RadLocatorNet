@@ -11,7 +11,7 @@ class FullyConnectedNetwork(L.LightningModule):
 
     Attributes:
         model (nn.Sequential): The model
-        loss_func (nn.MSELoss): The loss function
+        loss_func (nn.Module): The loss function
         optimizer (optim.Optimizer): The optimizer. For now defaults always to Adam.
 
     """
