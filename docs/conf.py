@@ -4,6 +4,8 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 import os
 import sys
+import radlocatornet
+
 
 sys.path.insert(0, os.path.abspath("../radlocatornet"))
 
@@ -14,7 +16,7 @@ sys.path.insert(0, os.path.abspath("../radlocatornet"))
 project = "Radiation Locator using Neural Networks"
 copyright = "2024, Alejandro Valverde Mahou"
 author = "Alejandro Valverde Mahou"
-release = "0.0.1"
+release = radlocatornet.__version__
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
