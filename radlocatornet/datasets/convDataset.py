@@ -1,8 +1,7 @@
 import os
-from typing import Optional
-
 import numpy as np
 from torch.utils.data import Dataset
+import h5py
 
 
 class ConvDataset(Dataset):
@@ -19,40 +18,24 @@ class ConvDataset(Dataset):
     def __init__(
         self,
         data_path: os.PathLike,
-        num_signals: int,
         transforms: list[callable] | None = None,
-        dtype: str = "float32",
+        dtype: np.dtype = np.float32,
     ) -> None:
         """Initialize the dataset
 
         Args:
             data_path (os.PathLike): The path to the data
-            num_signals (int): The number of signals. If the data cannot be divided by the number of signals, it will throw an error
             transforms (list[callable] | None, optional): The list of transforms to apply to the data. Defaults to None.
-            dtype (str, optional): The data type of the data. It has to be a valid numpy data type. Defaults to "float32".
-
-        Raises:
-            ValueError: If the data is not divisible by the number of signals
+            dtype (np.dtype, optional): The data type of the data. Defaults to np.float32.
         """
         self.data_path = data_path
-        self.num_signals = num_signals
         self.transforms = transforms
 
-        self.data = np.load(self.data_path)
-
-        # Test that the size make sense:
-        if (self.data.shape[1] - 3) % num_signals != 0:
-            raise ValueError(
-                f"Data shape is not divisible by the number of signals. Expected {self.data.shape[1] - 3} % {num_signals} == 0"
-            )
-
-        self.shape = (
-            self.data.shape[0],
-            num_signals,
-            (self.data.shape[1] - 3) // num_signals,
-        )
-
-        self.dtype = dtype
+        with h5py.File(self.data_path, "r") as f:
+            self.signals = f["signals"][:].astype(dtype)
+            step_size = f.attrs["step_size"]
+            size = f.attrs["size"]
+            self.labels = (f["labels"] * step_size / size)[:].astype(dtype)
 
     def __len__(self) -> int:
         """Return the length of the dataset
@@ -60,10 +43,10 @@ class ConvDataset(Dataset):
         Returns:
             int: The length of the dataset
         """
-        return len(self.data)
+        return len(self.signals)
 
     def __getitem__(self, idx: int) -> tuple[np.ndarray, np.ndarray]:
-        """Return the item at the given index. The first 3 columns are the labels, the rest are the signals that are reshaped to the correct number of signals
+        """Return the item at the given index. The signal have to be transposed, as they come in (num_samples, sample_length, num_signals), but PyTorch expects (num_signals, sample_length)
 
         Args:
             idx (int): The index of the item
@@ -71,11 +54,8 @@ class ConvDataset(Dataset):
         Returns:
             tuple[np.ndarray, np.ndarray]: The signal and the label
         """
-        label = self.data[idx, :3].astype(self.dtype)
-        signal = self.data[idx, 3:].astype(self.dtype)
-
-        # reshape signal to have the correct number of signals
-        signal = signal.reshape(-1, self.num_signals).T
+        signal = self.signals[idx].T
+        label = self.labels[idx]
 
         return signal, label
 
@@ -85,4 +65,4 @@ class ConvDataset(Dataset):
         Returns:
             str: The representation of the dataset
         """
-        return f"ConvDataset(data_path={self.data_path}, shape={self.shape}, dtype={self.dtype})"
+        return f"ConvDataset(data_path={self.data_path}, shape={self.shape})"

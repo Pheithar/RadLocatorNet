@@ -12,9 +12,7 @@ class RadLocatorDataModule(L.LightningDataModule):
         data_path (str): Location of the data
         batch_size (int): The batch size
         num_workers (int): Number of worker for the data loader
-        num_signals (int, optional): Number of signals. Necessary for the `conv` type. Defaults to -1.
         transforms (list[callable] | None): List of transforms to apply to the data. Defaults to None.
-        dtype (str): Precision of the data. Defaults to "float32"
         dataset (torch.utils.data.Dataset): The dataset
         generator (torch.Generator): The random number generator
         data_split (list[float]): The split of the data. Should be a list of 3 floats, representing the training, validation, and test split. It should add up to 1
@@ -23,6 +21,18 @@ class RadLocatorDataModule(L.LightningDataModule):
         test_set (torch.utils.data.Subset): The test set
     """
 
+    type: str
+    data_path: str
+    batch_size: int
+    num_workers: int
+    transforms: list[callable] | None
+    dataset: torch.utils.data.Dataset
+    generator: torch.Generator
+    data_split: list[float]
+    train_set: torch.utils.data.Subset
+    val_set: torch.utils.data.Subset
+    test_set: torch.utils.data.Subset
+
     def __init__(
         self,
         type: str,
@@ -30,9 +40,7 @@ class RadLocatorDataModule(L.LightningDataModule):
         batch_size: int,
         num_workers: int,
         data_split: list[float],
-        num_signals: int = -1,
         transforms: list[callable] | None = None,
-        dtype: str = "float32",
         seed: int = 42,
     ) -> None:
         """Initialize the data module. If the type is `conv`, there should be a number of signals. If the number of signals is not provided, it will raise an error.
@@ -47,9 +55,7 @@ class RadLocatorDataModule(L.LightningDataModule):
             batch_size (int): The batch size
             num_workers (int): Number of worker for the data loader
             data_split (list[float]): The split of the data. Should be a list of 3 floats, representing the training, validation, and test split, in that order. It should add up to 1
-            num_signals (int, optional): Number of signals. Necessary for the `conv` type. Defaults to -1.
             transforms (list[callable] | None, optional): List of transforms to apply to the data. Defaults to None.
-            dtype (str, optional): Precision of the data. Defaults to "float32".
             seed (int, optional): Seed for the random number generator. Defaults to 42.
 
         Raises:
@@ -60,10 +66,8 @@ class RadLocatorDataModule(L.LightningDataModule):
         self.type = type
         self.data_path = data_path
         self.transforms = transforms
-        self.dtype = dtype
         self.batch_size = batch_size
         self.num_workers = num_workers
-        self.num_signals = num_signals
         self.generator = torch.Generator().manual_seed(seed)
 
         if sum(data_split) != 1:
@@ -79,13 +83,9 @@ class RadLocatorDataModule(L.LightningDataModule):
             ValueError: If the number of signals is not provided for the ConvDataset
         """
         if self.type == "flat":
-            self.dataset = FlatDataset(self.data_path, self.transforms, self.dtype)
+            self.dataset = FlatDataset(self.data_path, self.transforms)
         elif self.type == "conv":
-            if self.num_signals == -1:
-                raise ValueError("Number of signals is required for the ConvDataset")
-            self.dataset = ConvDataset(
-                self.data_path, self.num_signals, self.transforms, self.dtype
-            )
+            self.dataset = ConvDataset(self.data_path, self.transforms)
         else:
             raise ValueError(f"Dataset type '{type}' not recognized")
 
@@ -105,11 +105,6 @@ class RadLocatorDataModule(L.LightningDataModule):
         Returns:
             DataLoader: The training data loader, with the training set. It has shuffling enabled
         """
-        print(self.train_set)
-        print("_________________________________")
-        print(self.batch_size)
-        print("_________________________________")
-        print(self.num_workers)
         return DataLoader(
             self.train_set,
             batch_size=self.batch_size,

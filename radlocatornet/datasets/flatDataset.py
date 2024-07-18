@@ -16,6 +16,12 @@ class FlatDataset(Dataset):
         dtype (str): The data type of the data. It has to be a valid numpy data type
     """
 
+    data_path: os.PathLike
+    transforms: list[callable] | None
+    data: np.ndarray
+    shape: tuple[int, int]
+    dtype: str
+
     def __init__(
         self,
         data_path: os.PathLike,

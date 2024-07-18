@@ -18,9 +18,10 @@ class Conv1DNetwork(L.LightningModule):
             nn.ReLU(),
             nn.MaxPool1d(2),
             nn.Flatten(),
-            nn.Linear(25 * 95, 500),
+            nn.Linear(25 * 250, 500),
             nn.ReLU(),
             nn.Linear(500, 3),
+            nn.Sigmoid(),
         )
         self.loss_func = nn.MSELoss()
         self.train_loss = []
@@ -36,12 +37,11 @@ class Conv1DNetwork(L.LightningModule):
         Returns:
             float: The loss of the training step
         """
-        x = batch["signal"]
-        y = batch["label"]
+        x, y = batch
 
-        x = self.model(x)
+        y_hat = self.model(x)
 
-        loss = self.loss_func(x, y)
+        loss = self.loss_func(y_hat, y)
         self.log(
             "train_loss", loss, on_step=False, on_epoch=True, prog_bar=True, logger=True
         )
@@ -57,12 +57,11 @@ class Conv1DNetwork(L.LightningModule):
         Returns:
             float: _description_
         """
-        x = batch["signal"]
-        y = batch["label"]
+        x, y = batch
 
-        x = self.model(x)
+        y_hat = self.model(x)
 
-        loss = self.loss_func(x, y)
+        loss = self.loss_func(y_hat, y)
         self.log(
             "val_loss", loss, on_step=False, on_epoch=True, prog_bar=True, logger=True
         )
@@ -80,17 +79,16 @@ class Conv1DNetwork(L.LightningModule):
             float: _description_
         """
 
-        x = batch["signal"]
-        y = batch["label"]
+        x, y = batch
 
-        x = self.model(x)
+        y_hat = self.model(x)
 
-        loss = self.loss_func(x, y)
+        loss = self.loss_func(y_hat, y)
         self.log("test_loss", loss)
         return loss
 
     def configure_optimizers(self):
-        optimizer = optim.Adam(self.parameters(), lr=1e-5)
+        optimizer = optim.Adam(self.parameters(), lr=1e-4)
         return optimizer
 
     def on_train_epoch_end(self) -> None:
