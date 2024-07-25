@@ -2,18 +2,23 @@ import os
 import numpy as np
 from torch.utils.data import Dataset
 import h5py
+import torch
 
 
-class ConvDataset(Dataset):
+class ConvDatasetRadLocatorNet(Dataset):
     """Dataset that uses the signals reshaped. Useful for convolutional networks
 
     Attributes:
         data_path (os.PathLike): The path to the data
-        num_signals (int): The number of signals. Variable to reshape the data. Depends on the sensor
         transforms (list[callable] | None): The list of transforms to apply to the data
-        data (np.ndarray): The data, loaded from the data path. It is expected to be 2 dimensional, with the first 3 columns being the labels and the rest being the flattened signals. It has to be able to be reshaped to the correct number of signals
-        shape (tuple[int, int, int]): The shape of the data
+        signals (np.ndarray): The signals
+        labels (np.ndarray): The labels
     """
+
+    data_path: os.PathLike
+    transforms: list[callable] | None
+    signals: np.ndarray
+    labels: np.ndarray
 
     def __init__(
         self,
@@ -21,7 +26,7 @@ class ConvDataset(Dataset):
         transforms: list[callable] | None = None,
         dtype: np.dtype = np.float32,
     ) -> None:
-        """Initialize the dataset
+        """Initialize the dataset. The labels are always normalized to be between 0 and 1.
 
         Args:
             data_path (os.PathLike): The path to the data
@@ -36,6 +41,9 @@ class ConvDataset(Dataset):
             step_size = f.attrs["step_size"]
             size = f.attrs["size"]
             self.labels = (f["labels"] * step_size / size)[:].astype(dtype)
+            # Transform the signal and label to torch tensors
+            self.signals = torch.from_numpy(self.signals)
+            self.labels = torch.from_numpy(self.labels)
 
     def __len__(self) -> int:
         """Return the length of the dataset
@@ -57,6 +65,10 @@ class ConvDataset(Dataset):
         signal = self.signals[idx].T
         label = self.labels[idx]
 
+        if self.transforms:
+            for transform in self.transforms:
+                signal = transform(signal)
+
         return signal, label
 
     def __repr__(self) -> str:
@@ -65,4 +77,4 @@ class ConvDataset(Dataset):
         Returns:
             str: The representation of the dataset
         """
-        return f"ConvDataset(data_path={self.data_path}, shape={self.shape})"
+        return f"ConvDataset(data_path={self.data_path}, num_signals={self.signals.shape[2]}, num_samples={self.signals.shape[0]}, sample_length={self.signals.shape[1]}, num_labels={self.labels.shape[1]})"

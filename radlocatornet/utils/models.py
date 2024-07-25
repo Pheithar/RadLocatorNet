@@ -28,8 +28,8 @@ def get_activation_function(name: str) -> nn.Module:
         "sigmoid": nn.Sigmoid(),
         "identity": nn.Identity(),
     }
-    if name in activations:
-        return activations[name]
+    if name.lower() in activations:
+        return activations[name.lower()]
 
     raise ValueError(f"Activation function '{name}' not found or not yet implemented")
 
@@ -54,7 +54,7 @@ def get_loss_function(name: str) -> nn.Module:
         "mse": nn.MSELoss(),
         "l1": nn.L1Loss(),
     }
-    if name in losses:
-        return losses[name]
+    if name.lower() in losses:
+        return losses[name.lower()]
 
     raise ValueError(f"Loss function '{name}' not found or not yet implemented")

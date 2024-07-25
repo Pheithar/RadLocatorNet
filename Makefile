@@ -1,3 +1,4 @@
+# TODO: REmove the aphinx-apidoc in the future. It should not be necessary
 documentation:
 	@echo "Generating documentation..."
 	@cd docs && sphinx-apidoc -o . ../radlocatornet --force && make html

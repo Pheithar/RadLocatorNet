@@ -1,93 +1,75 @@
 import lightning as L
-from radlocatornet.datasets import ConvDataset, FlatDataset
+from radlocatornet.datasets import ConvDatasetRadLocatorNet, FlatDataset
 import torch
 from torch.utils.data import random_split, DataLoader
+from torch.utils.data import Dataset
+import math
 
 
 class RadLocatorDataModule(L.LightningDataModule):
     """Data module for the RadLocator project. This class should be used to load the data and prepare it for the model. The data module should be used to load the data, split it into training, validation, and test sets, and prepare it for the model.
 
     Attributes:
-        type (str): The type of the dataset
-        data_path (str): Location of the data
+        dataset (Dataset): The dataset that should be used in the data module
         batch_size (int): The batch size
-        num_workers (int): Number of worker for the data loader
-        transforms (list[callable] | None): List of transforms to apply to the data. Defaults to None.
-        dataset (torch.utils.data.Dataset): The dataset
+        num_workers (int): Number of workers for the data loader
         generator (torch.Generator): The random number generator
         data_split (list[float]): The split of the data. Should be a list of 3 floats, representing the training, validation, and test split. It should add up to 1
-        train_set (torch.utils.data.Subset): The training set
-        val_set (torch.utils.data.Subset): The validation set
-        test_set (torch.utils.data.Subset): The test set
+        train_set (Dataset): The training set
+        val_set (Dataset): The validation set
+        test_set (Dataset): The test set
+
     """
 
-    type: str
-    data_path: str
+    dataset: Dataset
     batch_size: int
     num_workers: int
-    transforms: list[callable] | None
-    dataset: torch.utils.data.Dataset
     generator: torch.Generator
-    data_split: list[float]
-    train_set: torch.utils.data.Subset
-    val_set: torch.utils.data.Subset
-    test_set: torch.utils.data.Subset
+    data_split: tuple[float, float, float]
+    train_set: Dataset
+    val_set: Dataset
+    test_set: Dataset
 
     def __init__(
         self,
-        type: str,
-        data_path: str,
+        dataset: Dataset,
         batch_size: int,
-        num_workers: int,
-        data_split: list[float],
-        transforms: list[callable] | None = None,
+        num_workers: int = 8,
+        data_split: tuple[float, float, float] = (0.8, 0.1, 0.1),
         seed: int = 42,
     ) -> None:
-        """Initialize the data module. If the type is `conv`, there should be a number of signals. If the number of signals is not provided, it will raise an error.
-
-        Allowed types are:
-            - flat -> FlatDataset
-            - conv -> ConvDataset
+        """Initialize the data module.
 
         Args:
-            type (str): The type of the dataset
-            data_path (str): Location of the data
+            dataset (Dataset): The dataset that should be used in the data module
             batch_size (int): The batch size
-            num_workers (int): Number of worker for the data loader
-            data_split (list[float]): The split of the data. Should be a list of 3 floats, representing the training, validation, and test split, in that order. It should add up to 1
-            transforms (list[callable] | None, optional): List of transforms to apply to the data. Defaults to None.
-            seed (int, optional): Seed for the random number generator. Defaults to 42.
+            num_workers (int): Number of workers for the data loader. Defaults to 8.
+            data_split (tuple[float, float, float]): The split of the data. Should be a list of 3 floats, representing the training, validation, and test split. It should add up to 1. Defaults to (0.8, 0.1, 0.1).
+            seed (int, optional): The seed for the random number generator. Defaults to 42.
 
         Raises:
             ValueError: If the data split does not add up to 1
         """
         super().__init__()
 
-        self.type = type
-        self.data_path = data_path
-        self.transforms = transforms
+        self.dataset = dataset
+
         self.batch_size = batch_size
         self.num_workers = num_workers
         self.generator = torch.Generator().manual_seed(seed)
 
-        if sum(data_split) != 1:
-            raise ValueError("Data split should add up to 1")
+        if not math.isclose(sum(data_split), 1):
+            raise ValueError(f"Data split should add up to 1. Got {sum(data_split)}")
 
         self.data_split = data_split
 
     def prepare_data(self) -> None:
-        """Prepare the data. This method should be used to load the data and prepare it for the model. The data should be loaded here, but not split into training, validation, and test sets. This should be done in the `setup` method.
+        """Prepare the data. This method should be used to load the data and prepare it for the model.
 
-        Raises:
-            ValueError: If the type of the dataset is not recognized
-            ValueError: If the number of signals is not provided for the ConvDataset
+        .. warning::
+            Right now this method does nothing. It is here for future use
         """
-        if self.type == "flat":
-            self.dataset = FlatDataset(self.data_path, self.transforms)
-        elif self.type == "conv":
-            self.dataset = ConvDataset(self.data_path, self.transforms)
-        else:
-            raise ValueError(f"Dataset type '{type}' not recognized")
+        pass
 
     def setup(self, stage=None) -> None:
         """Setup the data. This method should be used to split the data into training, validation, and test sets. The data should be split here, and the splits should be saved as attributes of the class. The splits should be accessible through the `train_dataloader`, `val_dataloader`, and `test_dataloader` methods.
@@ -102,6 +84,11 @@ class RadLocatorDataModule(L.LightningDataModule):
     def train_dataloader(self) -> DataLoader:
         """Return the training data loader
 
+        .. note::
+            The training data loader has shuffling and drop_last enabled
+            This is to ensure that batch normalization works correctly
+            and that the training set is not biased towards the last batch
+
         Returns:
             DataLoader: The training data loader, with the training set. It has shuffling enabled
         """
@@ -110,6 +97,7 @@ class RadLocatorDataModule(L.LightningDataModule):
             batch_size=self.batch_size,
             num_workers=self.num_workers,
             shuffle=True,
+            drop_last=True,
         )
 
     def val_dataloader(self) -> DataLoader:
