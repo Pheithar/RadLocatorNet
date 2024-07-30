@@ -1,7 +1,7 @@
 import torch
 
 
-class RandomNoiseTransform:
+class RandomNoiseTransform(torch.nn.Module):
     """Apply random noise to the signals.
 
     Attributes:
@@ -16,7 +16,7 @@ class RandomNoiseTransform:
         """
         self.noise = noise
 
-    def __call__(self, signals: torch.Tensor) -> torch.Tensor:
+    def forward(self, signals: torch.Tensor) -> torch.Tensor:
         """Apply the transform.
 
         Args:
@@ -27,3 +27,6 @@ class RandomNoiseTransform:
         """
 
         return signals + self.noise * torch.randn_like(signals)
+
+    def __repr__(self):
+        return f"RandomNoiseTransform(noise={self.noise})"

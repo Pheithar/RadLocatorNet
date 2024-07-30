@@ -32,29 +32,3 @@ def get_activation_function(name: str) -> nn.Module:
         return activations[name.lower()]
 
     raise ValueError(f"Activation function '{name}' not found or not yet implemented")
-
-
-def get_loss_function(name: str) -> nn.Module:
-    """Get the loss function from the name
-
-    Allowed loss functions:
-        - mse -> nn.MSELoss
-        - l1 -> nn.L1Loss
-
-    Args:
-        name (str): The name of the loss function
-
-    Returns:
-        nn.Module: The loss function
-
-    Raises:
-        ValueError: If the loss function is not found
-    """
-    losses = {
-        "mse": nn.MSELoss(),
-        "l1": nn.L1Loss(),
-    }
-    if name.lower() in losses:
-        return losses[name.lower()]
-
-    raise ValueError(f"Loss function '{name}' not found or not yet implemented")

@@ -1,7 +1,7 @@
 import torch
 
 
-class RandomTurnOffTransform:
+class RandomTurnOffTransform(torch.nn.Module):
     """Transform that randomly turns off a signal with a given probability.
 
     Attributes:
@@ -16,7 +16,7 @@ class RandomTurnOffTransform:
         """
         self.p = p
 
-    def __call__(self, signals: torch.Tensor) -> torch.Tensor:
+    def forward(self, signals: torch.Tensor) -> torch.Tensor:
         """Apply the transform. It is not applied to all the signals, just to some of them, randomly.
         The signals have a dimension (num_signals, length). The transform should turn off the signals with a probability `p`.
 
@@ -29,3 +29,6 @@ class RandomTurnOffTransform:
         mask = torch.rand(signals.shape[0]) < self.p
         signals[mask] = 0
         return signals
+
+    def __repr__(self):
+        return f"RandomTurnOffTransform(p={self.p})"

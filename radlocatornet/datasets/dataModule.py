@@ -1,5 +1,4 @@
 import lightning as L
-from radlocatornet.datasets import ConvDatasetRadLocatorNet, FlatDataset
 import torch
 from torch.utils.data import random_split, DataLoader
 from torch.utils.data import Dataset

@@ -16,21 +16,21 @@ class ConvDatasetRadLocatorNet(Dataset):
     """
 
     data_path: os.PathLike
-    transforms: list[callable] | None
+    transforms: torch.nn.Module | None
     signals: np.ndarray
     labels: np.ndarray
 
     def __init__(
         self,
         data_path: os.PathLike,
-        transforms: list[callable] | None = None,
+        transforms: torch.nn.Module | None = None,
         dtype: np.dtype = np.float32,
     ) -> None:
         """Initialize the dataset. The labels are always normalized to be between 0 and 1.
 
         Args:
             data_path (os.PathLike): The path to the data
-            transforms (list[callable] | None, optional): The list of transforms to apply to the data. Defaults to None.
+            transforms (torch.nn.Module | None, optional): The Sequence of transforms to apply to the data. Defaults to None.
             dtype (np.dtype, optional): The data type of the data. Defaults to np.float32.
         """
         self.data_path = data_path
