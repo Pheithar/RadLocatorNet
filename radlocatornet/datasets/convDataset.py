@@ -66,8 +66,7 @@ class ConvDatasetRadLocatorNet(Dataset):
         label = self.labels[idx]
 
         if self.transforms:
-            for transform in self.transforms:
-                signal = transform(signal)
+            signal = self.transforms(signal)
 
         return signal, label
 

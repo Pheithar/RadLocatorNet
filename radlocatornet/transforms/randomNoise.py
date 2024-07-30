@@ -14,6 +14,7 @@ class RandomNoiseTransform(torch.nn.Module):
         Args:
             noise (float): The noise to apply to the signals
         """
+        super().__init__()
         self.noise = noise
 
     def forward(self, signals: torch.Tensor) -> torch.Tensor:

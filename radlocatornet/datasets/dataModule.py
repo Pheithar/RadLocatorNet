@@ -62,6 +62,9 @@ class RadLocatorDataModule(L.LightningDataModule):
 
         self.data_split = data_split
 
+        # Save hyperparameters
+        self.save_hyperparameters()
+
     def prepare_data(self) -> None:
         """Prepare the data. This method should be used to load the data and prepare it for the model.
 

@@ -14,6 +14,7 @@ class RandomTurnOffTransform(torch.nn.Module):
         Args:
             p (float): The probability of turning off the signal
         """
+        super().__init__()
         self.p = p
 
     def forward(self, signals: torch.Tensor) -> torch.Tensor:
