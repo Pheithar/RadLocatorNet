@@ -59,7 +59,7 @@ class RadLocatorNetworkModule(L.LightningModule):
         self.test_step_targets = []
 
         # Save the hyperparameters
-        self.save_hyperparameters()
+        # self.save_hyperparameters()
 
     def configure_optimizers(self) -> optim.Optimizer:
         """Configure the optimizer
@@ -109,7 +109,7 @@ class RadLocatorNetworkModule(L.LightningModule):
             torch.Tensor: The loss
         """
         loss, y_hat, y = self._common_step(batch)
-        self.log_dict({"train_loss": loss}, on_step=False, on_epoch=True, prog_bar=True)
+        self.log_dict({"Train Loss": loss}, on_step=False, on_epoch=True, prog_bar=True)
 
         # Keep track of the outputs and targets.
         self.train_step_outputs.append(y_hat)
@@ -130,7 +130,9 @@ class RadLocatorNetworkModule(L.LightningModule):
             torch.Tensor: The loss
         """
         loss, y_hat, y = self._common_step(batch)
-        self.log_dict({"val_loss": loss}, on_step=False, on_epoch=True, prog_bar=True)
+        self.log_dict(
+            {"Validation Loss": loss}, on_step=False, on_epoch=True, prog_bar=True
+        )
 
         # Keep track of the outputs and targets.
         self.validation_step_outputs.append(y_hat)
@@ -151,7 +153,7 @@ class RadLocatorNetworkModule(L.LightningModule):
             torch.Tensor: The loss
         """
         loss, y_hat, y = self._common_step(batch)
-        self.log_dict({"test_loss": loss}, on_step=False, on_epoch=True)
+        self.log_dict({"Test Loss": loss}, on_step=False, on_epoch=True)
 
         # Keep track of the outputs and targets.
         self.test_step_outputs.append(y_hat)

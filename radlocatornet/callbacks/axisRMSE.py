@@ -86,9 +86,9 @@ class AxisRMSECallback(Callback):
 
         radlocatormodule.log_dict(
             {
-                "train_scaled_rmse_x": xaxis_error,
-                "train_scaled_rmse_y": yaxis_error,
-                "train_scaled_rmse_z": zaxis_error,
+                "Train ScaledRMSE x": xaxis_error,
+                "Train ScaledRMSE y": yaxis_error,
+                "Train ScaledRMSE z": zaxis_error,
             },
             on_epoch=True,
             prog_bar=self.progress_bar,
@@ -119,9 +119,9 @@ class AxisRMSECallback(Callback):
 
         radlocatormodule.log_dict(
             {
-                "validation_scaled_rmse_x": xaxis_error,
-                "validation_scaled_rmse_y": yaxis_error,
-                "validation_scaled_rmse_z": zaxis_error,
+                "Validation ScaledRMSE x": xaxis_error,
+                "Validation ScaledRMSE y": yaxis_error,
+                "Validation ScaledRMSE z": zaxis_error,
             },
             on_epoch=True,
             prog_bar=self.progress_bar,
@@ -152,9 +152,9 @@ class AxisRMSECallback(Callback):
 
         radlocatormodule.log_dict(
             {
-                "test_scaled_rmse_x": xaxis_error,
-                "test_scaled_rmse_y": yaxis_error,
-                "test_scaled_rmse_z": zaxis_error,
+                "Test ScaledRMSE x": xaxis_error,
+                "Test ScaledRMSE y": yaxis_error,
+                "Test ScaledRMSE z": zaxis_error,
             },
             on_epoch=True,
             prog_bar=self.progress_bar,

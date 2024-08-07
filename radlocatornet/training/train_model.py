@@ -5,7 +5,7 @@ import lightning as L
 from torch import nn
 from radlocatornet import models
 from radlocatornet.datasets.dataModule import RadLocatorDataModule
-from pytorch_lightning.loggers import Logger
+from pytorch_lightning.loggers import Logger, CSVLogger
 
 
 def train_model(

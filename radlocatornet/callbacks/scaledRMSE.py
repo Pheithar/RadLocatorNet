@@ -1,4 +1,4 @@
-from lightning import Callback, LightningModule, Trainer
+from lightning import Callback, Trainer
 import torch
 from radlocatornet.models import RadLocatorNetworkModule
 from radlocatornet.utils import training_plotting
@@ -70,7 +70,7 @@ class ScaledRMSECallback(Callback):
         error = torch.sqrt(((output - target) ** 2).mean())
 
         radlocatormodule.log(
-            "train_scaled_rmse", error, on_epoch=True, prog_bar=self.progress_bar
+            "Train ScaledRMSE", error, on_epoch=True, prog_bar=self.progress_bar
         )
         if self.plot and not trainer.sanity_checking:
             self.train_rmse.append(error.item())
@@ -92,7 +92,7 @@ class ScaledRMSECallback(Callback):
         error = torch.sqrt(((output - target) ** 2).mean())
 
         radlocatormodule.log(
-            "validation_scaled_rmse", error, on_epoch=True, prog_bar=self.progress_bar
+            "Validation ScaledRMSE", error, on_epoch=True, prog_bar=self.progress_bar
         )
 
         if self.plot and not trainer.sanity_checking:
@@ -115,7 +115,7 @@ class ScaledRMSECallback(Callback):
         error = torch.sqrt(((output - target) ** 2).mean())
 
         radlocatormodule.log(
-            "test_scaled_rmse", error, on_epoch=True, prog_bar=self.progress_bar
+            "Test ScaledRMSE", error, on_epoch=True, prog_bar=self.progress_bar
         )
 
     def on_fit_end(self, trainer: Trainer, pl_module: RadLocatorNetworkModule) -> None:
